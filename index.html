@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fresca&display=swap" rel="stylesheet">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotes axios</title>
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+
+<body>
+    <h1>Quotes</h1>
+    <ul id="quote_ul"></ul>
+    <button id="getbutton" type="submit">Show Quotes</button>
+
+    <form>
+        <label for="name"> name </label>
+        <input type="text" id="new_name" name="name" required>
+        <label for="quote"> quote </label>
+        <input type="quote" id="new_quote" name="quote" required>
+        <button id="postbutton" type="submit">Add Record</button>
+    </form>
+    
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
