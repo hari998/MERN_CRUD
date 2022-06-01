@@ -1,0 +1,6 @@
+**EDIT AND RENAME THIS FILE AS ".env" 
+
+PORT=5000
+MONGO_ATLAS_URI= **enter your mongodb connection uri here**
+NODE_ENV=development
+JWT_SECRET= **enter any string**
