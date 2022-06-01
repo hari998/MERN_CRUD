@@ -1,0 +1,27 @@
+body {
+  background-color: indianred;
+  color: white;
+  font-family: 'Fresca', sans-serif;
+  font-size: 18px;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  margin-bottom: .2em;
+  margin-top: .2em;
+  padding: 0.2em;
+  border: 1px solid white;
+  transition-property: background-color, color;
+  transition-duration: 500ms;
+  transition-timing-function: ease-in-out;
+}
+
+li:hover {
+  background-color: white;
+  color: black;
+}
