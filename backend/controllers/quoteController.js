@@ -1,51 +1,93 @@
 const asyncHandler = require('express-async-handler')
 const Quotes = require("../models/quoteschema")
+const User = require('../models/userSchema')
 
 // GET all quotes from database
 // @Route  GET  api/quotes/
-const getQuote = async (req, res) => {
-    try {
-        const quotes = await Quotes.find()
-        res.status(200).json(quotes)
-    } catch (error) { console.log(error) }
-}
+const getQuote = asyncHandler(async (req, res) => {
+
+  const quotes = await Quotes.find({ user: req.user.id })
+  res.status(200).json(quotes)
+})
+
 
 // POST the quote to database
 // @Route POST  api/quotes/
-const SetQuote = asyncHandler(async (req, res) => {
-    if (!req.body.name || !req.body.quote) {
-        res.status(400)
-        throw new Error('Please enter all records')
-    }
-    const quotes = await Quotes.create({
-        name: req.body.name,
-        quote: req.body.quote
-    })
-    res.status(200).json(quotes);
+const setQuote = asyncHandler(async (req, res) => {
+
+  if (!req.body.quote) {
+    res.status(400)
+    throw new Error('Please add quote')
+  }
+
+  const quotes = await Quotes.create({
+    quote: req.body.quote,
+    name: req.body.name,
+    user: req.user.id,
+  })
+
+  res.status(200).json(quotes)
 })
 
-// PUT update the quote in database by using /:id in the url
+
+// PUT update the quote in database
 // @Route  PUT  api/quotes/:id
 const updateQuote = asyncHandler(async (req, res) => {
-    const updateQuote = await Quotes.findById(req.params.id)
+  const updateQuote = await Quotes.findById(req.params.id)
 
-    if (!updateQuote) {
-        res.status(400)
-        throw new Error('Quote not found')
-    }
-    const updatedQuote = await Quotes.findByIdAndUpdate(req.params.id, req.body, { new: true })
-    res.json(updatedQuote)
+  if (!updateQuote) {
+    res.status(400)
+    throw new Error('Quote not found')
+  }
+
+  // before updating, first find the user- loggedin user id
+  const user = await User.findById(req.user.id)
+
+  if (!user) {
+    res.status(401)
+    throw new Error('user not found')
+  }
+  //  to check if logged in user matches with quote user
+  //  updateQuote.user -> UpdateQuote has a user field , this will be attached with user.id -> the one which we got from above user, see line  41
+  // here, basically we are checking (matching) the user's id in the updateQuote  to the  user's id of the user that is logged in (i.e user.id from the 'User' model,  **this is done in order to avoid one user updating/deleting someone else's quote)
+
+  if (updateQuote.user.toString() !== user.id) {
+    res.status(401)
+    throw new Error('user not authorised')
+  }
+  const updatedQuote = await Quotes.findByIdAndUpdate(req.params.id, req.body, { new: true })
+  res.json(updatedQuote)
 })
 
-// DELETE the quote in database by using /:id in the url
+
+// DELETE the quote in database 
 // @Route  DELETE  api/quotes/:id
-const deleteQuote = async (req, res) => {
-    try {
-        const deleteQuote = await Quotes.deleteOne({_id: req.params.id})
-        res.json(deleteQuote)
-    } catch (error) { console.log(error) }
-    
-}
+const deleteQuote = asyncHandler(async (req, res) => {
 
-module.exports = { getQuote, SetQuote, updateQuote, deleteQuote }
+  const deleteQuote = await Quotes.findById(req.params.id)
 
+  if (!deleteQuote) {
+    res.status(400)
+    throw new Error('Quote not found')
+  }
+
+  // before deleting, first find the user from the logged in
+  const user = await User.findById(req.user.id)
+
+  if (!user) {
+    res.status(401)
+    throw new Error('user not found')
+  }
+
+  if (deleteQuote.user.toString() != user.id) {
+    res.status(401)
+    throw new Error('user not authorised')
+  }
+
+  const deletedQuote = await Quotes.deleteOne({ _id: req.params.id })
+  res.status(200).json({ id: req.params.id })
+
+})
+
+
+module.exports = { getQuote, setQuote, updateQuote, deleteQuote }
