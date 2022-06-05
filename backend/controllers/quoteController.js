@@ -40,18 +40,15 @@ const updateQuote = asyncHandler(async (req, res) => {
     throw new Error('Quote not found')
   }
 
-  // before updating, first find the user- loggedin user id
-  const user = await User.findById(req.user.id)
-
-  if (!user) {
+  if (!req.user) {
     res.status(401)
     throw new Error('user not found')
   }
   //  to check if logged in user matches with quote user
-  //  updateQuote.user -> UpdateQuote has a user field , this will be attached with user.id -> the one which we got from above user, see line  41
-  // here, basically we are checking (matching) the user's id in the updateQuote  to the  user's id of the user that is logged in (i.e user.id from the 'User' model,  **this is done in order to avoid one user updating/deleting someone else's quote)
+  //  updateQuote.user -> UpdateQuote has a user field 
+  // here, basically we are checking (matching) the user's id in the updateQuote  to the  user's id of the user that is logged in (i.e req.user.id),  **this is done in order to avoid one user updating/deleting someone else's quote)
 
-  if (updateQuote.user.toString() !== user.id) {
+  if (updateQuote.user.toString() !== req.user.id) {
     res.status(401)
     throw new Error('user not authorised')
   }
@@ -71,15 +68,12 @@ const deleteQuote = asyncHandler(async (req, res) => {
     throw new Error('Quote not found')
   }
 
-  // before deleting, first find the user from the logged in
-  const user = await User.findById(req.user.id)
-
-  if (!user) {
+  if (!req.user) {
     res.status(401)
     throw new Error('user not found')
   }
 
-  if (deleteQuote.user.toString() != user.id) {
+  if (deleteQuote.user.toString() != req.user.id) {
     res.status(401)
     throw new Error('user not authorised')
   }
