@@ -1,8 +1,9 @@
 const express = require('express')
 const quoterouter = express.Router()
-const { getQuote, SetQuote, updateQuote, deleteQuote } = require('../controllers/quoteController')
+const { getQuote, setQuote, updateQuote, deleteQuote } = require('../controllers/quoteController')
+const { protect } = require('../middleware/authMiddleware')
 
-quoterouter.route('/').get(getQuote).post(SetQuote)
-quoterouter.route('/:id').put(updateQuote).delete(deleteQuote)
+quoterouter.route('/').get(protect, getQuote).post(protect, setQuote)
+quoterouter.route('/:id').put(protect, updateQuote).delete(protect, deleteQuote)
 
 module.exports = quoterouter
